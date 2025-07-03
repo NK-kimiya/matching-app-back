@@ -1,0 +1,13 @@
+テスト用アカウント
+
+ユーザー名：キミヤデラックス
+メールアドレス：kimiyadelax@example.com
+パスワード：kimiyadelax
+
+ユーザー名：あかき
+メールアドレス：akaki@example.com
+パスワード：akaki
+
+ユーザー名：石井太郎
+メールアドレス：ishiitarou@example.com
+パスワード：ishiitarou
