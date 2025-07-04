@@ -29,8 +29,7 @@ SECRET_KEY = 'django-insecure-69a2)7gcp0qggw!s8u84tim%8j3nk059yl_k%sogn$-t6--*nv
 print("★ DJANGO_ENV =", ENV_MODE)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ENV_MODE != "production"
-
-
+#DEBUG = "production"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
 
 
@@ -157,19 +156,26 @@ MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 import dj_database_url
 
 
-if ENV_MODE == "production":
-    # 本番：Renderなど → DATABASE_URL を使う
-    DATABASES = {
-        "default": dj_database_url.config(conn_max_age=600, ssl_require=True)
+
+# ローカル：SQLiteを使う
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    # ローカル：SQLiteを使う
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+}
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
+}
 
 # ローカル：デフォルトの FileSystemStorage を使う
 #MEDIA_URL = '/media/'
