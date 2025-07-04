@@ -1,9 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    #profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    profile_image = CloudinaryField('image', blank=True, null=True)
     bio = models.TextField(null=True, blank=True)
     prefecture = models.CharField(max_length=100, null=True, blank=True)
     friends = models.ManyToManyField("self", symmetrical=True, blank=True)
@@ -11,10 +13,6 @@ class CustomUser(AbstractUser):
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        print("★ 使用中のストレージクラス:", self.profile_image.storage.__class__)
-        print("★ アップロードされたファイル名:", self.profile_image.name)
-        print("★ アップロードされた画像URL:", self.profile_image.url)
-
 '''
 誰が誰にマッチング申請したか
 その申請が承認されたか

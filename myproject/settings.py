@@ -12,31 +12,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_MODE = os.getenv("DJANGO_ENV", "local")
 
-if ENV_MODE == "production":
-    # 本番：Supabase Storage を使う
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    print("★ 使用中のストレージ：", DEFAULT_FILE_STORAGE)
-    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
-    AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
-    AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
-    AWS_S3_ADDRESSING_STYLE = "path"
-    AWS_QUERYSTRING_AUTH = False
-    
-    # ★ 追加：MEDIA_URLをSupabase URLにする
-    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
-else:
-    print("★ Supabase設定は無効です（ローカルモード）")
-    # ローカル：デフォルトの FileSystemStorage を使う
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -63,7 +46,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'corsheaders',
-    'storages'
+    'storages',
+    'cloudinary', # 追加
+    'cloudinary_storage', # 追加
 ]
 
 MIDDLEWARE = [
@@ -192,6 +177,26 @@ else:
         }
     }
 
+# ローカル：デフォルトの FileSystemStorage を使う
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+import environ
 
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
+#MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': env('CLOUDINARY_API_KEY'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET'),
+}
+
+cloudinary.config( 
+    cloud_name = env('CLOUDINARY_CLOUD_NAME'),
+    api_key = env('CLOUDINARY_API_KEY'),
+    api_secret = env('CLOUDINARY_API_SECRET')
+)
 
