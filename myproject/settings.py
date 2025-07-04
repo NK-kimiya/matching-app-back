@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,11 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-69a2)7gcp0qggw!s8u84tim%8j3nk059yl_k%sogn$-t6--*nv'
-
+ENV_MODE = os.getenv("DJANGO_ENV", "local")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENV_MODE != "production"
 
-import os
+
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
 
 
@@ -142,7 +143,7 @@ AUTH_USER_MODEL = 'account.CustomUser'  # アプリ名.モデル名
 import os
 
 # 環境変数からモードを取得（なければ local とする）
-ENV_MODE = os.getenv("DJANGO_ENV", "local")
+
 
 if ENV_MODE == "production":
     # 本番：Supabase Storage を使う
