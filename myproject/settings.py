@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'corsheaders',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -169,7 +170,6 @@ MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 import dj_database_url
 
-ENV_MODE = os.getenv("DJANGO_ENV", "local")
 
 if ENV_MODE == "production":
     # 本番：Renderなど → DATABASE_URL を使う
