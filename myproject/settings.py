@@ -141,7 +141,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:3000",                       # 開発用 React
+    "https://matching-app-react.netlify.app",      # 本番フロント
 ]
 
 AUTH_USER_MODEL = 'account.CustomUser'  # アプリ名.モデル名
