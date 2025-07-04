@@ -159,6 +159,7 @@ if ENV_MODE == "production":
     AWS_S3_ADDRESSING_STYLE = "path"
     AWS_QUERYSTRING_AUTH = False
 else:
+    print("★ Supabase設定は無効です（ローカルモード）")
     # ローカル：デフォルトの FileSystemStorage を使う
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
