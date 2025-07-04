@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-69a2)7gcp0qggw!s8u84tim%8j3nk059yl_k%sogn$-t6--*nv'
 ENV_MODE = os.getenv("DJANGO_ENV", "local")
+print("★ DJANGO_ENV =", ENV_MODE)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ENV_MODE != "production"
 
@@ -148,7 +149,7 @@ import os
 if ENV_MODE == "production":
     # 本番：Supabase Storage を使う
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
+    print("★ 使用中のストレージ：", DEFAULT_FILE_STORAGE)
     AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
     AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
