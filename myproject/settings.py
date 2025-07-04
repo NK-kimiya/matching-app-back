@@ -15,14 +15,34 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_MODE = os.getenv("DJANGO_ENV", "local")
 
+if ENV_MODE == "production":
+    # 本番：Supabase Storage を使う
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    print("★ 使用中のストレージ：", DEFAULT_FILE_STORAGE)
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+    AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
+
+    AWS_S3_ADDRESSING_STYLE = "path"
+    AWS_QUERYSTRING_AUTH = False
+    
+    # ★ 追加：MEDIA_URLをSupabase URLにする
+    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
+else:
+    print("★ Supabase設定は無効です（ローカルモード）")
+    # ローカル：デフォルトの FileSystemStorage を使う
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-69a2)7gcp0qggw!s8u84tim%8j3nk059yl_k%sogn$-t6--*nv'
-ENV_MODE = os.getenv("DJANGO_ENV", "local")
 print("★ DJANGO_ENV =", ENV_MODE)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ENV_MODE != "production"
@@ -146,23 +166,7 @@ import os
 # 環境変数からモードを取得（なければ local とする）
 
 
-if ENV_MODE == "production":
-    # 本番：Supabase Storage を使う
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    print("★ 使用中のストレージ：", DEFAULT_FILE_STORAGE)
-    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
-    AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
-    AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
-    AWS_S3_ADDRESSING_STYLE = "path"
-    AWS_QUERYSTRING_AUTH = False
-else:
-    print("★ Supabase設定は無効です（ローカルモード）")
-    # ローカル：デフォルトの FileSystemStorage を使う
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
@@ -187,5 +191,7 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+
 
 
