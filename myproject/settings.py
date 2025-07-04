@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-69a2)7gcp0qggw!s8u84tim%8j3nk059yl_k%sogn$-t6--*nv
 DEBUG = True
 
 import os
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
 
 
 # Application definition
@@ -140,8 +140,26 @@ AUTH_USER_MODEL = 'account.CustomUser'  # アプリ名.モデル名
 
 import os
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# 環境変数からモードを取得（なければ local とする）
+ENV_MODE = os.getenv("DJANGO_ENV", "local")
+
+if ENV_MODE == "production":
+    # 本番：Supabase Storage を使う
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+    AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
+
+    AWS_S3_ADDRESSING_STYLE = "path"
+    AWS_QUERYSTRING_AUTH = False
+else:
+    # ローカル：デフォルトの FileSystemStorage を使う
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -151,6 +169,20 @@ MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 import dj_database_url
 
-DATABASES = {
-    "default": dj_database_url.config(conn_max_age=600, ssl_require=True)  # DATABASE_URL を自動読取
-}
+ENV_MODE = os.getenv("DJANGO_ENV", "local")
+
+if ENV_MODE == "production":
+    # 本番：Renderなど → DATABASE_URL を使う
+    DATABASES = {
+        "default": dj_database_url.config(conn_max_age=600, ssl_require=True)
+    }
+else:
+    # ローカル：SQLiteを使う
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
