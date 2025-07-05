@@ -1,4 +1,4 @@
-from .models import CustomUser,ChatRoom,FriendRequest
+from .models import CustomUser
 from rest_framework import serializers
 
 
@@ -24,17 +24,3 @@ class RegisterSerializer(serializers.ModelSerializer):
             prefecture=validated_data.get('prefecture'),
         )
         return user
-
-
-
-class ChatRoomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ChatRoom
-        fields = ['id', 'user1', 'user2', 'created_at']
-        
-class FriendRequestSerializer(serializers.ModelSerializer):
-    from_user = CustomUserSerializer(read_only=True)
-    to_user = CustomUserSerializer(read_only=True)
-    class Meta:
-        model = FriendRequest
-        fields = ['id', 'from_user', 'to_user', 'is_accepted', 'timestamp']
