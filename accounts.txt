@@ -15,3 +15,9 @@
 ユーザー名：石井太郎
 メールアドレス：ishiitarou@example.com
 パスワード：fdsfjsf09
+
+
+##----------公開用アカウントテスト----------
+ユーザー名：田中太郎
+メールアドレス：tanakatarou@example.com
+パスワード：tanakatarou

@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 import cloudinary
+from datetime import timedelta
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -158,17 +161,15 @@ import dj_database_url
 
 
 # ローカル：SQLiteを使う
-'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-'''
-
 
 #デプロイ用のデータベース
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -179,6 +180,7 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
+'''
 
 # ローカル：デフォルトの FileSystemStorage を使う
 #MEDIA_URL = '/media/'
@@ -202,4 +204,16 @@ cloudinary.config(
     api_key = env('CLOUDINARY_API_KEY'),
     api_secret = env('CLOUDINARY_API_SECRET')
 )
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),   # default
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # ⬅ おすすめ：1週間
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+}
 
