@@ -161,16 +161,15 @@ import dj_database_url
 
 
 # ローカル：SQLiteを使う
-'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-'''
 
 #デプロイ用のデータベース
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -181,6 +180,8 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
+'''
+
 
 
 # ローカル：デフォルトの FileSystemStorage を使う

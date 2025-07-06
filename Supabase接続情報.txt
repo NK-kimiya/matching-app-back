@@ -1,0 +1,22 @@
+パスワード：vtEY!5p?Q@DQVn)
+
+プロジェクト名：matchiing-app
+
+DATABASE_URL：postgresql://postgres.yyrlvzamwnmojhadspns:vtEY%215p%3FQ%40DQVn%29@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require
+
+DB_HOST：aws-0-ap-northeast-1.pooler.supabase.com
+
+
+DB_NAME：postgres
+
+DB_PASSWORD：vtEY!5p?Q@DQVn)
+
+DB_PORT：6543
+
+DB_USER：postgres.orzzcbfijxaxbdkjxdlo
+
+
+
+Access key ID:5cd4197aed0ba75b136cb24c9f122c67
+
+Secret access key:ef350d3c697a6ac4291bf1a324b69bb501b2931366ac3adb00cf97c794b3ec2c

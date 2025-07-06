@@ -25,3 +25,12 @@ class UserChatRoom(models.Model):
     
     def __str__(self):
         return f"{self.user.username}'s chat room"
+
+class ChatMessage(models.Model):
+    chat_room = models.ForeignKey(UserChatRoom, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey("CustomUser", on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username}: {self.content[:30]}"

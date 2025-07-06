@@ -2,9 +2,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer,CustomUserSerializer
+from .serializers import RegisterSerializer,CustomUserSerializer,ChatMessageSerializer
 from rest_framework import generics,permissions
-from .models import CustomUser
+from .models import CustomUser,ChatMessage
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
@@ -73,3 +73,22 @@ class UserDetailByIdView(APIView):
             return Response({"error": "ユーザーが見つかりません"}, status=status.HTTP_404_NOT_FOUND)
 
 
+class ChatMessageCreateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        data = request.data.copy()
+        data['sender'] = request.user.id
+        serializer = ChatMessageSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ChatMessageListView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, chat_room_id):
+        messages = ChatMessage.objects.filter(chat_room__id=chat_room_id).order_by('timestamp')
+        serializer = ChatMessageSerializer(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
