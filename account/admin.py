@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser,UserChatRoom,ChatMessage
+from .models import CustomUser,UserChatRoom,ChatMessage,UserRoomParticipation
 
 # CustomUserモデルの管理画面設定
 @admin.register(CustomUser)
@@ -54,6 +54,20 @@ class ChatMessageAdmin(admin.ModelAdmin):
     def short_content(self, obj):
         return obj.content[:30]
     short_content.short_description = 'content'
+
+# UserRoomParticipationモデルの管理画面設定
+@admin.register(UserRoomParticipation)
+class UserRoomParticipationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'chat_room', 'get_chat_room_owner')
+    list_filter = ('chat_room', 'user')
+    search_fields = ('user__username', 'user__email', 'chat_room__user__username')
+    ordering = ('-id',)
+    
+    # チャットルームの所有者を表示するためのメソッド
+    def get_chat_room_owner(self, obj):
+        return obj.chat_room.user.username
+    get_chat_room_owner.short_description = 'チャットルーム所有者'
+    get_chat_room_owner.admin_order_field = 'chat_room__user__username'
 
 # FriendRequestモデルの管理画面設定
 # 管理画面のタイトルとヘッダーをカスタマイズ

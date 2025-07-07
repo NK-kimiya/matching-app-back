@@ -34,3 +34,13 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender.username}: {self.content[:30]}"
+    
+class UserRoomParticipation(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    chat_room = models.ForeignKey(UserChatRoom, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'chat_room')  # 同じ組み合わせは1つだけ
+
+    def __str__(self):
+        return f"{self.user.username} in room of {self.chat_room.user.username}"

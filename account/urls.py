@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView,MeView,UserDetailByIdView,UserProfileUpdateView,UserListView,ChatMessageCreateView,ChatMessageListView
+from .views import RegisterView,MeView,UserDetailByIdView,UserProfileUpdateView,UserListView,ChatMessageCreateView,ChatMessageListView,ChatRoomParticipantsView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -15,4 +15,5 @@ urlpatterns = [
     path('users/<int:user_id>/', UserDetailByIdView.as_view(), name='user-detail-by-id'),
     path('chat/messages/', ChatMessageCreateView.as_view(), name='chat-message-create'),
     path('chat/messages/<int:chat_room_id>/', ChatMessageListView.as_view(), name='chat-message-list'),
+    path('chat/participants/', ChatRoomParticipantsView.as_view(), name='chat-participants'),
 ]

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import RegisterSerializer,CustomUserSerializer,ChatMessageSerializer
 from rest_framework import generics,permissions
-from .models import CustomUser,ChatMessage
+from .models import CustomUser,ChatMessage,UserRoomParticipation,UserChatRoom
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
@@ -77,13 +77,24 @@ class ChatMessageCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        data = request.data.copy()
-        data['sender'] = request.user.id
-        serializer = ChatMessageSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = request.data.copy()# リクエストデータを変更できるようにコピー
+        data['sender'] = request.user.id# 現在ログイン中のユーザーのIDを sender フィールドに追加
+        
+         # 先にチャットルーム取得（Validation前に必要なため）
+        chat_room_id = data.get('chat_room')# フロントから送られてきたチャットルームのIDを取得
+        chat_room = get_object_or_404(UserChatRoom, id=chat_room_id)# IDに対応するチャットルームがなければ404を返す
+
+        # 参加履歴の追加（重複は避ける）
+        UserRoomParticipation.objects.get_or_create( # ユーザーとチャットルームのペアが存在しない場合のみ新たに作成
+            user=request.user,# ログイン中のユーザー
+            chat_room=chat_room # 取得したチャットルーム
+        )
+
+        serializer = ChatMessageSerializer(data=data)# メッセージデータをシリアライザーに渡してバリデーション準備
+        if serializer.is_valid():# バリデーションOKなら
+            serializer.save()# メッセージをDBに保存
+            return Response(serializer.data, status=status.HTTP_201_CREATED)# 成功レスポンスを返す
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)# バリデーションエラーの場合は400を返す
     
 class ChatMessageListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -92,3 +103,20 @@ class ChatMessageListView(APIView):
         messages = ChatMessage.objects.filter(chat_room__id=chat_room_id).order_by('timestamp')
         serializer = ChatMessageSerializer(messages, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ChatRoomParticipantsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]# 認証済みユーザーのみアクセスを許可
+
+    def get(self, request):
+        participations = UserRoomParticipation.objects.filter(user=request.user)
+         # └ ① リクエストユーザー(request.user)に紐づく参加レコードを取得
+
+        partners = [p.chat_room.user for p in participations]
+         # └ ② 取得した各参加レコード(p)から、その chat_room に紐づくユーザー(CustomUser)を取り出してリスト化
+
+        serializer = CustomUserSerializer(partners, many=True, context={'request': request})
+        # └ ③ CustomUserSerializer を使って、ユーザーオブジェクトのリストをシリアライズ
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # └ ④ シリアライズ済みデータを HTTP 200 OK としてクライアントに返却
