@@ -5,7 +5,7 @@ from rest_framework import status
 from .serializers import RegisterSerializer,CustomUserSerializer,ChatMessageSerializer
 from rest_framework import generics,permissions
 from .models import CustomUser,ChatMessage,UserRoomParticipation,UserChatRoom
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser,JSONParser
 from rest_framework.generics import ListAPIView
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -37,7 +37,7 @@ class UserProfileUpdateView(APIView):
     # 認証されているユーザーのみがこのビューにアクセスできるようにする
     permission_classes = [permissions.IsAuthenticated]
     # フロントエンドから画像（profile_image）などのファイルを受け取るために、パーサを設定
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     def put(self, request):
         # 現在ログインしているユーザー（request.user）を対象に、
