@@ -184,7 +184,6 @@ DATABASES = {
     }
 }
 
-
 # ローカル：デフォルトの FileSystemStorage を使う
 #MEDIA_URL = '/media/'
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

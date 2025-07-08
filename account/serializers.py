@@ -6,18 +6,24 @@ from .models import ChatMessage
 class CustomUserSerializer(serializers.ModelSerializer):
     # profile_image フィールドはデフォルトのフィールドではなく、メソッドで取得するカスタムフィールド
     profile_image = serializers.SerializerMethodField()
+    
+    profile_image_upload = serializers.ImageField(
+        source="profile_image",     # モデルの同じフィールドにマッピング
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
     # chat_rooms フィールドもメソッドで取得（UserChatRoom の一覧を含めるため）
     chat_rooms = serializers.SerializerMethodField()  # 👈 追加
     
     class Meta:
-        # 対象となるモデルを指定（CustomUser モデルをシリアライズする）
-        model = CustomUser
-         # API で返すフィールドの一覧を指定
+        model  = CustomUser
         fields = [
-            "id", "username", "email",
-            "first_name", "last_name",
-            "profile_image", "bio", "prefecture","chat_rooms",
-        ]
+            "id", "username", "email", "bio", "prefecture",
+            "profile_image",          # ← 読み取り用（URL）
+            "profile_image_upload",   # ← 書き込み用（ファイル）
+            "chat_rooms",     
+    ]
 
     # profile_image フィールド用のメソッド（Cloudinaryの画像URLを生成）
     def get_profile_image(self, obj):
